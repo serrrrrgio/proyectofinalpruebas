@@ -490,6 +490,132 @@ public void testAlquilarVehiculo() {
     LOG.info("Finalizando prueba: testAlquilarVehiculo");
 }
 
+@Test
+public void testObtenerCliente() {
+    LOG.info("Iniciando test: obtenerCliente");
+
+    Administrador administrador = new Administrador("Joab", "Suarez", "jb@gmail.com", "123", "321", "joab123", "Laura", PreguntaSeguridad.BEST_FRIEND, "Laura");
+    Concesionario concesionario = new Concesionario("Carros", 52145214.154, administrador);
+    Cliente cliente = new Cliente("Sergio", "Posada", "Sergio@gmail.com", "1107849207", "3245844293", "SdeSergio", "1107849207", PreguntaSeguridad.BEST_FRIEND, "Padilla");
+    concesionario.agregarCliente(cliente);
+
+    Cliente clienteEncontrado = concesionario.obtenerCliente("SdeSergio", "1107849207");
+    assertTrue(clienteEncontrado != null && clienteEncontrado.getUsuario().equals("SdeSergio"), "El cliente no fue encontrado correctamente.");
+
+    LOG.info("Finalizando test: obtenerCliente");
+}
+
+@Test
+public void testObtenerEmpleado() {
+    LOG.info("Iniciando test: obtenerEmpleado");
+
+    Administrador administrador = new Administrador("Joab", "Suarez", "jb@gmail.com", "123", "321", "joab123", "Laura", PreguntaSeguridad.BEST_FRIEND, "Laura");
+    Concesionario concesionario = new Concesionario("Carros", 52145214.154, administrador);
+    Empleado empleado = new Empleado("Maicol", "Alvarez", "Maicol@gmail.com", "12341", "235263436", "Maicol123", "32541", PreguntaSeguridad.BEST_FRIEND, "Victoria", 22);
+    concesionario.agregarEmpleado(empleado);
+
+    Empleado empleadoEncontrado = concesionario.obtenerEmpleado("Maicol123", "32541");
+    assertTrue(empleadoEncontrado != null && empleadoEncontrado.getUsuario().equals("Maicol123"), "El empleado no fue encontrado correctamente.");
+
+    LOG.info("Finalizando test: obtenerEmpleado");
+}
+
+@Test
+public void testValidarAdministrador() {
+    LOG.info("Iniciando test: validarAdministrador");
+
+    Administrador administrador = new Administrador("Joab", "Suarez", "jb@gmail.com", "123", "321", "joab123", "Laura", PreguntaSeguridad.BEST_FRIEND, "Laura");
+    Concesionario concesionario = new Concesionario("Carros", 52145214.154, administrador);
+
+    boolean esValido = concesionario.validarAdministrador("joab123", "Laura");
+    assertTrue(esValido, "La validación del administrador falló.");
+
+    LOG.info("Finalizando test: validarAdministrador");
+}
+
+@Test
+public void testVerTransaccionesEmpleado() {
+    LOG.info("Iniciando prueba: verTransaccionesEmpleado");
+
+    // Crear administrador y concesionario
+    Administrador administrador = new Administrador(
+        "Joab", "Suarez", "jb@gmail.com", "123", "321", "joab123",
+        "Laura", PreguntaSeguridad.BEST_FRIEND, "Laura"
+    );
+    Concesionario concesionario = new Concesionario("Carros", 52145214.154, administrador);
+
+    // Crear empleado
+    Empleado empleado = new Empleado(
+        "Ana", "Martínez", "ana@gmail.com", "54321", "123456789", 
+        "anaM", "pass456", PreguntaSeguridad.BEST_FRIEND, "Sofía", 30
+    );
+
+    // Crear un vehículo tipo Camioneta
+    Vehiculo vehiculo = new Camioneta(
+        "Marca", "XYZ789", 2020, 4, 100.0, 3000.0, TipoRegistro.ALQUILER,
+        Transmision.MANUAL, Estado.USADO, 50, 2, true, true, false,
+        200.0, true, 3, true, true, true, true, Combustible.DIESEL,
+        700.0, 3.0, true, false
+    );
+
+    // Crear transacciones
+    Transaccion transaccion1 = new Transaccion(
+        LocalDate.of(2024, 1, 1),
+        LocalDate.of(2024, 1, 10),
+        1000.0,
+        TipoTransaccion.COMPRA,
+        empleado,
+        new Cliente(
+            "Juan", "Pérez", "juanp@gmail.com", "98765", "456789123", 
+            "juanP", "pass123", PreguntaSeguridad.PET_NAME, "Max"
+        ),
+        vehiculo
+    );
+    Transaccion transaccion2 = new Transaccion(
+        LocalDate.of(2024, 5, 1),
+        LocalDate.of(2024, 5, 10),
+        1500.0,
+        TipoTransaccion.ALQUILER,
+        empleado,
+        new Cliente(
+            "Lucía", "Gómez", "lucia@gmail.com", "56789", "123456789", 
+            "luciaG", "pass456", PreguntaSeguridad.PET_NAME, "Bella"
+        ),
+        vehiculo
+    );
+
+    // Agregar transacciones al empleado
+    empleado.agregarTransaccion(transaccion1);
+    empleado.agregarTransaccion(transaccion2);
+
+    // Verificar las transacciones en el concesionario
+    LinkedList<Transaccion> transacciones = concesionario.verTransaccionesEmpleado(
+        empleado, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 6, 1)
+    );
+    assertTrue(transacciones.size() != 2, "El número de transacciones no es correcto.");
+
+    LOG.info("Finalizando prueba: verTransaccionesEmpleado");
+}
+
+
+
+@Test
+public void testObtenerVehiculosVenta() {
+    LOG.info("Iniciando prueba: obtenerVehiculosVenta");
+
+    Administrador administrador = new Administrador("Joab", "Suarez", "jb@gmail.com", "123", "321", "joab123", "Laura", PreguntaSeguridad.BEST_FRIEND, "Laura");
+    Concesionario concesionario = new Concesionario("Carros", 52145214.154, administrador);
+    Vehiculo vehiculoVenta = new Carro("Marca", "XYZ123", 2023, 5, 120.5, 1500.0, TipoRegistro.VENTA, Transmision.MANUAL, Estado.NUEVO, 5, 4, true, true, true, Combustible.DIESEL, 400.0, 1.8, false, true);
+    Vehiculo vehiculoAlquiler = new Carro("Marca", "ABC789", 2022, 5, 130.0, 1600.0, TipoRegistro.ALQUILER, Transmision.AUTOMATICA, Estado.USADO, 4, 3, false, false, false, Combustible.GASOLINA, 300.0, 2.0, true, false);
+    concesionario.agregarVehiculo(vehiculoVenta);
+    concesionario.agregarVehiculo(vehiculoAlquiler);
+
+    LinkedList<Vehiculo> vehiculosVenta = concesionario.obtenerVehiculosVenta();
+    assertTrue(vehiculosVenta.contains(vehiculoVenta) && !vehiculosVenta.contains(vehiculoAlquiler), "La lista de vehículos de venta no es correcta.");
+
+    LOG.info("Finalizando prueba: obtenerVehiculosVenta");
+}
+
 
 }
 
